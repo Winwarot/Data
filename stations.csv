@@ -1,0 +1,211 @@
+code,name,line,isInterchange
+N24,Khu Khot,BTS Sukhumvit (Light Green),0
+N23,Yaek Kor Por Aor,BTS Sukhumvit (Light Green),0
+N22,Royal Thai Air Force Museum,BTS Sukhumvit (Light Green),0
+N21,Bhumibol Adulyadej Hospital,BTS Sukhumvit (Light Green),0
+N20,Saphan Mai,BTS Sukhumvit (Light Green),0
+N19,Sai Yud,BTS Sukhumvit (Light Green),0
+N18,Phahon Yothin 59,BTS Sukhumvit (Light Green),0
+N17,Wat Phra Sri Mahathat,BTS Sukhumvit (Light Green),1
+N16,11th Infantry Regiment,BTS Sukhumvit (Light Green),0
+N15,Bang Bua,BTS Sukhumvit (Light Green),0
+N14,Royal Forest Department,BTS Sukhumvit (Light Green),0
+N13,Kasetsart University,BTS Sukhumvit (Light Green),0
+N12,Sena Nikhom,BTS Sukhumvit (Light Green),0
+N11,Ratchayothin,BTS Sukhumvit (Light Green),0
+N10,Phahon Yothin 24,BTS Sukhumvit (Light Green),0
+N9,Ha Yaek Lat Phrao,BTS Sukhumvit (Light Green),1
+N8,Mo Chit,BTS Sukhumvit (Light Green),1
+N7,Saphan Khwai,BTS Sukhumvit (Light Green),0
+N6,Sena Ruam,BTS Sukhumvit (Light Green),0
+N5,Ari,BTS Sukhumvit (Light Green),0
+N4,Sanam Pao,BTS Sukhumvit (Light Green),0
+N3,Victory Monument,BTS Sukhumvit (Light Green),0
+N2,Phaya Thai,BTS Sukhumvit (Light Green),1
+N1,Ratchathewi,BTS Sukhumvit (Light Green),0
+CEN,Siam,BTS Sukhumvit (Light Green),1
+E1,Chit Lom,BTS Sukhumvit (Light Green),0
+E2,Phloen Chit,BTS Sukhumvit (Light Green),0
+E3,Nana,BTS Sukhumvit (Light Green),0
+E4,Asok,BTS Sukhumvit (Light Green),1
+E5,Phrom Phong,BTS Sukhumvit (Light Green),0
+E6,Thong Lo,BTS Sukhumvit (Light Green),0
+E7,Ekkamai,BTS Sukhumvit (Light Green),0
+E8,Phra Khanong,BTS Sukhumvit (Light Green),0
+E9,On Nut,BTS Sukhumvit (Light Green),0
+E10,Bang Chak,BTS Sukhumvit (Light Green),0
+E11,Punnawithi,BTS Sukhumvit (Light Green),0
+E12,Udom Suk,BTS Sukhumvit (Light Green),0
+E13,Bang Na,BTS Sukhumvit (Light Green),0
+E14,Bearing,BTS Sukhumvit (Light Green),0
+E15,Samrong,BTS Sukhumvit (Light Green),1
+E16,Pu Chao,BTS Sukhumvit (Light Green),0
+E17,Chang Erawan,BTS Sukhumvit (Light Green),0
+E18,Royal Thai Naval Academy,BTS Sukhumvit (Light Green),0
+E19,Pak Nam,BTS Sukhumvit (Light Green),0
+E20,Srinagarindra,BTS Sukhumvit (Light Green),0
+E21,Phraek Sa,BTS Sukhumvit (Light Green),0
+E22,Sai Luat,BTS Sukhumvit (Light Green),0
+E23,Kheha,BTS Sukhumvit (Light Green),0
+W1,National Stadium,BTS Silom (Dark Green),0
+S1,Ratchadamri,BTS Silom (Dark Green),0
+S2,Sala Daeng,BTS Silom (Dark Green),1
+S3,Chong Nonsi,BTS Silom (Dark Green),0
+S4,Saint Louis,BTS Silom (Dark Green),0
+S5,Surasak,BTS Silom (Dark Green),0
+S6,Saphan Taksin,BTS Silom (Dark Green),0
+S7,Krung Thon Buri,BTS Silom (Dark Green),1
+S8,Wongwian Yai,BTS Silom (Dark Green),0
+S9,Pho Nimit,BTS Silom (Dark Green),0
+S10,Talat Phlu,BTS Silom (Dark Green),0
+S11,Wutthakat,BTS Silom (Dark Green),0
+S12,Bang Wa,BTS Silom (Dark Green),1
+G1,Krung Thon Buri,BTS Gold Line,1
+G2,Charoen Nakhon,BTS Gold Line,0
+G3,Khlong San,BTS Gold Line,0
+BL01,Tha Phra,MRT Blue Line,0
+BL02,Charan 13,MRT Blue Line,0
+BL03,Fai Chai,MRT Blue Line,0
+BL04,Bang Khun Non,MRT Blue Line,0
+BL05,Bang Yi Khan,MRT Blue Line,0
+BL06,Sirindhorn,MRT Blue Line,0
+BL07,Bang Phlat,MRT Blue Line,0
+BL08,Bang O,MRT Blue Line,0
+BL09,Bang Pho,MRT Blue Line,0
+BL10,Tao Poon,MRT Blue Line,1
+BL11,Bang Sue Grand Station,MRT Blue Line,1
+BL12,Kamphaeng Phet,MRT Blue Line,0
+BL13,Chatuchak Park,MRT Blue Line,1
+BL14,Phahon Yothin,MRT Blue Line,1
+BL15,Lat Phrao,MRT Blue Line,1
+BL16,Ratchadaphisek,MRT Blue Line,0
+BL17,Sutthisan,MRT Blue Line,0
+BL18,Huai Khwang,MRT Blue Line,0
+BL19,Thailand Cultural Centre,MRT Blue Line,1
+BL20,Phra Ram 9,MRT Blue Line,0
+BL21,Phetchaburi,MRT Blue Line,1
+BL22,Sukhumvit,MRT Blue Line,1
+BL23,Queen Sirikit National Convention Centre,MRT Blue Line,0
+BL24,Khlong Toei,MRT Blue Line,0
+BL25,Lumphini,MRT Blue Line,0
+BL26,Si Lom,MRT Blue Line,1
+BL27,Sam Yan,MRT Blue Line,0
+BL28,Hua Lamphong,MRT Blue Line,0
+BL29,Wat Mangkon,MRT Blue Line,0
+BL30,Sam Yot,MRT Blue Line,0
+BL31,Sanam Chai,MRT Blue Line,0
+BL32,Itsaraphap,MRT Blue Line,0
+BL33,Bang Phai,MRT Blue Line,0
+BL34,Bang Wa,MRT Blue Line,1
+BL35,Phetkasem 48,MRT Blue Line,0
+BL36,Phasi Charoen,MRT Blue Line,0
+BL37,Bang Khae,MRT Blue Line,0
+BL38,Lak Song,MRT Blue Line,0
+PP01,Khlong Bang Phai,MRT Purple Line,0
+PP02,Talat Bang Yai,MRT Purple Line,0
+PP03,Sam Yaek Bang Yai,MRT Purple Line,0
+PP04,Bang Phlu,MRT Purple Line,0
+PP05,Bang Rak Yai,MRT Purple Line,0
+PP06,Bang Rak Noi Tha It,MRT Purple Line,0
+PP07,Sai Ma,MRT Purple Line,0
+PP08,Phra Nang Klao Bridge,MRT Purple Line,0
+PP09,Yaek Nonthaburi 1,MRT Purple Line,0
+PP10,Bang Kraso,MRT Purple Line,0
+PP11,Nonthaburi Civic Centre,MRT Purple Line,1
+PP12,Ministry of Public Health,MRT Purple Line,0
+PP13,Yaek Tiwanon,MRT Purple Line,0
+PP14,Wong Sawang,MRT Purple Line,0
+PP15,Bang Son,MRT Purple Line,0
+PP16,Tao Poon,MRT Purple Line,1
+A8,Phaya Thai,Airport Rail Link,1
+A7,Ratchaprarop,Airport Rail Link,0
+A6,Makkasan,Airport Rail Link,1
+A5,Ramkhamhaeng,Airport Rail Link,0
+A4,Hua Mak,Airport Rail Link,1
+A3,Ban Thap Chang,Airport Rail Link,0
+A2,Lat Krabang,Airport Rail Link,0
+A1,Suvarnabhumi,Airport Rail Link,0
+PK01,Nonthaburi Civic Centre,Pink Line,1
+PK02,Khae Rai,Pink Line,0
+PK03,Sanambin Nam,Pink Line,0
+PK04,Samakkhi,Pink Line,0
+PK05,Royal Irrigation Department,Pink Line,0
+PK06,Yaek Pak Kret,Pink Line,0
+PK07,Pak Kret Bypass,Pink Line,0
+PK08,Chaeng Watthana-Pak Kret 28,Pink Line,0
+PK09,Si Rat,Pink Line,0
+PK10,Muang Thong Thani,Pink Line,0
+PK10A,Impact Muang Thong Thani,Pink Line,0
+PK10B,Lake Muang Thong Thani,Pink Line,0
+PK11,Chaeng Watthana 14,Pink Line,0
+PK12,Government Complex,Pink Line,0
+PK13,National Telecommunications,Pink Line,0
+PK14,Lak Si,Pink Line,0
+PK15,Phranakhon Rajabhat University,Pink Line,0
+PK16,Wat Phra Sri Mahathat,Pink Line,1
+PK17,Ram Inthra 3,Pink Line,0
+PK18,Lat Pla Khao,Pink Line,0
+PK19,Ram Inthra Km.4,Pink Line,0
+PK20,Mayalap,Pink Line,0
+PK21,Watcharaphon,Pink Line,0
+PK22,Min Buri Market,Pink Line,0
+PK23,Min Buri,Pink Line,1
+PK24,Bang Chan,Pink Line,0
+PK25,Outer Ring Road-Ram Inthra,Pink Line,0
+PK26,Ram Inthra Km.6,Pink Line,0
+PK27,Nopparat,Pink Line,0
+PK28,Setthabutbamphen,Pink Line,0
+PK29,Khu Bon,Pink Line,0
+PK30,Min Buri (East),Pink Line,0
+YL01,Lat Phrao,Yellow Line,1
+YL02,Phawana,Yellow Line,0
+YL03,Chokchai 4,Yellow Line,0
+YL04,Lat Phrao 71,Yellow Line,0
+YL05,Lat Phrao 83,Yellow Line,0
+YL06,Mahat Thai,Yellow Line,0
+YL07,Lat Phrao 101,Yellow Line,0
+YL08,Bang Kapi,Yellow Line,0
+YL09,Yaek Lam Sali,Yellow Line,0
+YL10,Si Kritha,Yellow Line,0
+YL11,Hua Mak,Yellow Line,1
+YL12,Kalantan,Yellow Line,0
+YL13,Si Nut,Yellow Line,0
+YL14,Srinagarindra 38,Yellow Line,0
+YL15,Suan Luang Rama IX,Yellow Line,0
+YL16,Si Udom,Yellow Line,0
+YL17,Si Lam,Yellow Line,0
+YL18,Si La Salle,Yellow Line,0
+YL19,Si Bearing,Yellow Line,0
+YL20,Si Dan,Yellow Line,0
+YL21,Si Thepha,Yellow Line,0
+YL22,Thipphawan,Yellow Line,0
+YL23,Samrong,Yellow Line,1
+OR13,Thailand Cultural Centre,Orange Line (East),1
+OR14,MRTA,Orange Line (East),0
+OR15,Wat Phra Ram 9,Orange Line (East),0
+OR16,Pradit Manutham,Orange Line (East),0
+OR17,Ramkhamhaeng 12,Orange Line (East),0
+OR18,Ramkhamhaeng University,Orange Line (East),0
+OR19,Sports Authority of Thailand,Orange Line (East),0
+OR20,Lam Sali,Orange Line (East),0
+OR21,Si Burapha,Orange Line (East),0
+OR22,Khlong Ban Ma,Orange Line (East),0
+OR23,Sammakorn,Orange Line (East),0
+OR24,Nom Klao,Orange Line (East),0
+OR25,Rat Phatthana,Orange Line (East),0
+OR26,Min Phatthana,Orange Line (East),0
+OR27,Kheha Ramkhamhaeng,Orange Line (East),0
+OR28,Min Buri,Orange Line (East),1
+OR29,Yaek Rom Klao,Orange Line (East),0
+RE01,Bang Sue Grand Station,Dark Red Line (SRT),1
+RE02,Bang Toei,Dark Red Line (SRT),0
+RE03,Sai Kai,Dark Red Line (SRT),0
+RE04,Lak Si,Dark Red Line (SRT),0
+RE05,Don Mueang,Dark Red Line (SRT),0
+RE06,Rangsit,Dark Red Line (SRT),0
+RE07,Khlong Ha,Dark Red Line (SRT),0
+RE08,Thammasat University Rangsit,Dark Red Line (SRT),0
+RW01,Bang Sue Grand Station,Light Red Line (SRT),1
+RW02,Bang Bamru,Light Red Line (SRT),0
+RW03,Taling Chan,Light Red Line (SRT),0
+RW04,Salaya,Light Red Line (SRT),0
