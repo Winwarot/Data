@@ -10,32 +10,36 @@ Graph *createGraph(void) {
     return g;
 }
 
+// returns index, -1 if full
 int graphAddStation(Graph *g, const char *code, const char *name, const char *line, int isInterchange) {
     if (g->stationCount >= MAX_STATIONS) return -1;
+
     int idx = g->stationCount++;
-    Station *s = &g->stations[idx];
-    s->id = idx;
-    s->isInterchange = isInterchange;
-    s->isClosed = 0;
-    strncpy(s->code, code ? code : "", MAX_CODE_LEN - 1);
-    s->code[MAX_CODE_LEN - 1] = '\0';
-    strncpy(s->name, name, MAX_NAME_LEN - 1);
-    s->name[MAX_NAME_LEN - 1] = '\0';
-    strncpy(s->line, line, MAX_LINE_LEN - 1);
-    s->line[MAX_LINE_LEN - 1] = '\0';
+
+    g->stations[idx].id = idx;
+    g->stations[idx].isInterchange = isInterchange;
+    g->stations[idx].isClosed = 0;
+
+    strcpy(g->stations[idx].code, code);
+    strcpy(g->stations[idx].name, name);
+    strcpy(g->stations[idx].line, line);
+
     g->adjList[idx] = NULL;
     return idx;
 }
 
+// prepend to adj list
 void graphAddEdge(Graph *g, int from, int to, double dist, int time, int fare) {
     if (from < 0 || to < 0 || from >= g->stationCount || to >= g->stationCount) return;
+
     Edge *e = malloc(sizeof(Edge));
     if (!e) return;
+
     e->destination = to;
-    e->distance = dist;
-    e->time = time;
-    e->fare = fare;
-    e->next = g->adjList[from];
+    e->distance    = dist;
+    e->time        = time;
+    e->fare        = fare;
+    e->next        = g->adjList[from];
     g->adjList[from] = e;
 }
 
@@ -54,9 +58,11 @@ void graphReopenStation(Graph *g, int idx) {
         g->stations[idx].isClosed = 0;
 }
 
+// remove station and reindex
 void graphRemoveStation(Graph *g, int idx) {
     if (idx < 0 || idx >= g->stationCount) return;
 
+    // free outgoing edges
     Edge *cur = g->adjList[idx];
     while (cur) {
         Edge *nxt = cur->next;
@@ -65,6 +71,7 @@ void graphRemoveStation(Graph *g, int idx) {
     }
     g->adjList[idx] = NULL;
 
+    // remove incoming edges
     for (int i = 0; i < g->stationCount; i++) {
         Edge **pp = &g->adjList[i];
         while (*pp) {
@@ -78,6 +85,7 @@ void graphRemoveStation(Graph *g, int idx) {
         }
     }
 
+    // shift left
     for (int i = idx; i < g->stationCount - 1; i++) {
         g->stations[i] = g->stations[i + 1];
         g->stations[i].id = i;
@@ -85,6 +93,7 @@ void graphRemoveStation(Graph *g, int idx) {
     }
     g->stationCount--;
 
+    // update shifted destinations
     for (int i = 0; i < g->stationCount; i++) {
         Edge *e = g->adjList[i];
         while (e) {
