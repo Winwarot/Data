@@ -3,6 +3,14 @@
 
 #include "station.h"
 
+typedef struct PathResult {
+    int *path;
+    int pathLen;
+    int totalDist10;
+    int totalTime;
+    int totalFare;
+} PathResult;
+
 typedef struct Graph {
     Station stations[MAX_STATIONS];
     Edge *adjList[MAX_STATIONS];
@@ -16,6 +24,8 @@ void graphAddUndirectedEdge(Graph *g, int a, int b, double dist, int time, int f
 void graphCloseStation(Graph *g, int idx);
 void graphReopenStation(Graph *g, int idx);
 void graphRemoveStation(Graph *g, int idx);
+PathResult dijkstra(Graph *g, int src, int dst, const char *mode);
+void displayPath(const Graph *g, const PathResult *pr);
 void graphDisplay(const Graph *g);
 void freeGraph(Graph *g);
 
