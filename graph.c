@@ -258,6 +258,10 @@ PathResult dijkstra(Graph *g, int src, int dst, const char *mode) {
     result.totalTime = distT[dst];
     result.totalFare = distF[dst];
 
+    // minimum fare 17 THB
+    if (result.totalFare < 17 && result.pathLen > 1)
+        result.totalFare = 17;
+
     free(dist); free(prev); free(distKm); free(distT); free(distF);
     return result;
 }
