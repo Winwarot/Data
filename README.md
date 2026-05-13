@@ -2,7 +2,6 @@
 
 A terminal-based route planner for Bangkok's rail transit network, written entirely in C with no external libraries. Built as a final project for CPE112 Data Structures.
 
----
 
 ## Features
 
@@ -17,7 +16,6 @@ A terminal-based route planner for Bangkok's rail transit network, written entir
 
 Covers **210 stations** across 11 transit lines with **36 interchange stations** auto-detected from the data.
 
----
 
 ## Transit Lines Covered
 
@@ -35,7 +33,6 @@ Covers **210 stations** across 11 transit lines with **36 interchange stations**
 | Light Red Line (SRT) | 4 |
 | BTS Gold Line | 3 |
 
----
 
 ## Getting Started
 
@@ -61,7 +58,6 @@ gcc -Wall -o transit main.c data.c graph.c hashtable.c bst.c
 
 Both start scripts compile the project first, then launch the program automatically.
 
----
 
 ## How to Use
 
@@ -110,7 +106,6 @@ Fare        : 68 THB
 Line changes: 0
 ```
 
----
 
 ## Project Structure
 
@@ -130,33 +125,6 @@ start.command    macOS launcher — double-click in Finder
 start.bat        Windows launcher — double-click in Explorer
 ```
 
----
-
-## Data Structures and Algorithms
-
-### Structures used
-
-| Structure | Where | Why |
-|---|---|---|
-| **Adjacency List Graph** | Stores all stations and connections | Memory-efficient for a sparse graph; easy to traverse neighbors |
-| **Min-Heap** | Inside Dijkstra | Extracts the lowest-cost node in O(log V) per step |
-| **Hash Table** (chaining, DJB2) | Station lookup by name or code | O(1) average-case lookup regardless of network size |
-| **Binary Search Tree** | Prefix search, A-Z traversal | Inorder traversal naturally produces sorted output |
-
-### Algorithms used
-
-| Algorithm | Used for | Complexity |
-|---|---|---|
-| **Dijkstra** | Shortest path (stops or fare) | O((V + E) log V) |
-| **Insertion Sort** | Sort station list for A-Z display | O(n²) — acceptable for n ≤ 400 |
-| **BST Inorder Traversal** | Prefix search output | O(n) |
-| **DJB2 Hash** | Hash table key hashing | O(k) where k = key length |
-
-### Interchange detection
-
-Stations that share the same name but belong to different lines are automatically flagged as interchanges and linked with zero-distance, zero-fare edges. This runs once at load time and again whenever a station is added.
-
----
 
 ## Data Files
 
@@ -188,17 +156,3 @@ MRT, 2, 20
 ```
 
 Minimum fare is **17 THB** across all lines.
-
----
-
-## Known Limitations
-
-- Fare per edge is currently a fixed baseline of 17 THB. The `fare.csv` lookup table is loaded into memory but not yet applied to per-edge fare calculation — proper step-based fare requires knowing the entry station for each segment.
-- Time estimate is a fixed 2 minutes per edge and does not account for actual train schedules or wait times at interchanges.
-- The network reflects a static snapshot of Bangkok's rail map and does not update from a live data source.
-
----
-
-## Authors
-
-CPE112 Data Structures — King Mongkut's University of Technology Thonburi (KMUTT)
