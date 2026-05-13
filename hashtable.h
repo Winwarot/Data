@@ -10,8 +10,8 @@ typedef struct HashNode
     struct HashNode *next;
 } HashNode;
 
-typedef struct HashTable
-{
+
+typedef struct HashTable {
     HashNode *buckets[HASH_SIZE];
 } HashTable;
 
@@ -19,6 +19,6 @@ HashTable *createHashTable(void);
 void hashInsert(HashTable *ht, const char *name, int stationIndex);
 int hashSearch(const HashTable *ht, const char *name);
 void hashRemove(HashTable *ht, const char *name);
+void hashUpdateIndex(HashTable *ht, const char *name, int newIndex); 
 void freeHashTable(HashTable *ht);
-
 #endif
