@@ -3,6 +3,19 @@
 
 #include "station.h"
 
+#define MAX_FARE_ENTRIES 120
+
+typedef struct {
+    char lineType[MAX_LINE_LEN];
+    int  stationsPassed;
+    int  fare;
+} FareEntry;
+
+typedef struct {
+    FareEntry entries[MAX_FARE_ENTRIES];
+    int count;
+} FareTable;
+
 typedef struct PathResult {
     int *path;
     int pathLen;
@@ -12,9 +25,10 @@ typedef struct PathResult {
 } PathResult;
 
 typedef struct Graph {
-    Station stations[MAX_STATIONS];
-    Edge *adjList[MAX_STATIONS];
-    int stationCount;
+    Station   stations[MAX_STATIONS];
+    Edge     *adjList[MAX_STATIONS];
+    int       stationCount;
+    FareTable fareTable;
 } Graph;
 
 Graph *createGraph(void);

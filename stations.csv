@@ -140,7 +140,7 @@ PK10B,Lake Muang Thong Thani,Pink Line,0
 PK11,Chaeng Watthana 14,Pink Line,0
 PK12,Government Complex,Pink Line,0
 PK13,National Telecommunications,Pink Line,0
-PK14,Lak Si,Pink Line,0
+PK14,Lak Si,Pink Line,1
 PK15,Phranakhon Rajabhat University,Pink Line,0
 PK16,Wat Phra Sri Mahathat,Pink Line,1
 PK17,Ram Inthra 3,Pink Line,0
@@ -200,7 +200,7 @@ OR29,Yaek Rom Klao,Orange Line (East),0
 RE01,Bang Sue Grand Station,Dark Red Line (SRT),1
 RE02,Bang Toei,Dark Red Line (SRT),0
 RE03,Sai Kai,Dark Red Line (SRT),0
-RE04,Lak Si,Dark Red Line (SRT),0
+RE04,Lak Si,Dark Red Line (SRT),1
 RE05,Don Mueang,Dark Red Line (SRT),0
 RE06,Rangsit,Dark Red Line (SRT),0
 RE07,Khlong Ha,Dark Red Line (SRT),0

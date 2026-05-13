@@ -87,8 +87,8 @@ void linkSameNameInterchanges(Graph *g) {
             g->stations[i].isInterchange = 1;
             g->stations[j].isInterchange = 1;
 
-            if (!hasEdge(g, i, j)) graphAddEdge(g, i, j, 0.0);
-            if (!hasEdge(g, j, i)) graphAddEdge(g, j, i, 0.0);
+            if (!hasEdge(g, i, j)) graphAddEdge(g, i, j, 0.0, 0, 0);
+            if (!hasEdge(g, j, i)) graphAddEdge(g, j, i, 0.0, 0, 0);
         }
     }
 }
@@ -188,8 +188,8 @@ void loadData(Graph *g, HashTable *ht, BST *bst) {
 
         double dist = atof(distStr);
 
-        if (!hasEdge(g, fi, ti)) graphAddEdge(g, fi, ti, dist);
-        if (!hasEdge(g, ti, fi)) graphAddEdge(g, ti, fi, dist);
+        if (!hasEdge(g, fi, ti)) graphAddEdge(g, fi, ti, dist, 2, 17);
+        if (!hasEdge(g, ti, fi)) graphAddEdge(g, ti, fi, dist, 2, 17);
     }
     fclose(fe);
 

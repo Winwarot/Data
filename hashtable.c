@@ -84,6 +84,19 @@ void hashUpdateIndex(HashTable *ht, const char *name, int newIndex){
     }
     
 }
+void hashClear(HashTable *ht){
+    if (!ht) return;
+    for (int i = 0; i < HASH_SIZE; i++){
+        HashNode *cur = ht->buckets[i];
+        while (cur){
+            HashNode *nxt = cur->next;
+            free(cur);
+            cur = nxt;
+        }
+        ht->buckets[i] = NULL;
+    }
+}
+
 void freeHashTable(HashTable *ht){
     if (!ht) return;
     for (int i = 0; i < HASH_SIZE; i++)

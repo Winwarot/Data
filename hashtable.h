@@ -17,8 +17,9 @@ typedef struct HashTable {
 
 HashTable *createHashTable(void);
 void hashInsert(HashTable *ht, const char *name, int stationIndex);
-int hashSearch(const HashTable *ht, const char *name);
+int  hashSearch(const HashTable *ht, const char *name);
 void hashRemove(HashTable *ht, const char *name);
-void hashUpdateIndex(HashTable *ht, const char *name, int newIndex); 
+void hashUpdateIndex(HashTable *ht, const char *name, int newIndex);
+void hashClear(HashTable *ht);
 void freeHashTable(HashTable *ht);
 #endif
