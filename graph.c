@@ -543,13 +543,13 @@ void displayPath(const Graph *g, const PathResult *pr) {
         if (i < pr->pathLen - 1) printf(" -> ");
     }
 
-    // count system changes
+    // count line changes from the shown route
     int interchanges = 0;
-    const char *currentType = mapLineToFareType(g->stations[pr->path[0]].line);
+    const char *currentLine = g->stations[pr->path[0]].line;
     for (int i = 1; i < pr->pathLen; i++) {
         int from = pr->path[i - 1];
         int to = pr->path[i];
-        const char *nextType = mapLineToFareType(g->stations[to].line);
+        const char *nextLine = g->stations[to].line;
 
         int isWalk = 0;
         Edge *e = g->adjList[from];
@@ -561,9 +561,9 @@ void displayPath(const Graph *g, const PathResult *pr) {
             e = e->next;
         }
 
-        if (isWalk || strcmp(nextType, currentType) != 0) {
+        if (isWalk || strcmp(nextLine, currentLine) != 0) {
             interchanges++;
-            currentType = nextType;
+            currentLine = nextLine;
         }
     }
 
@@ -580,11 +580,11 @@ void displayPath(const Graph *g, const PathResult *pr) {
         int showInterchange = 0;
 
         if (g->stations[idx].isInterchange && i > 0 && i < pr->pathLen - 1) {
-            const char *prevType = mapLineToFareType(g->stations[pr->path[i - 1]].line);
-            const char *curType = mapLineToFareType(g->stations[idx].line);
-            const char *nextType = mapLineToFareType(g->stations[pr->path[i + 1]].line);
+            const char *prevLine = g->stations[pr->path[i - 1]].line;
+            const char *curLine = g->stations[idx].line;
+            const char *nextLine = g->stations[pr->path[i + 1]].line;
 
-            if (strcmp(prevType, curType) != 0 || strcmp(curType, nextType) != 0)
+            if (strcmp(prevLine, curLine) != 0 || strcmp(curLine, nextLine) != 0)
                 showInterchange = 1;
         }
 
