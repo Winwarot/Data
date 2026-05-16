@@ -15,269 +15,308 @@ typedef struct {
     int capacity;
 } MinHeap;
 
-#define FARE_TYPE_NONE 0
-#define FARE_TYPE_BTS  1
-#define FARE_TYPE_MRT  2
-#define FARE_TYPE_ARL  3
-#define FARE_TYPE_COUNT 4
-#define MAX_FARE_PASS 20
+static MinHeap *createMinHeap(int cap);
+static void pushHeap(MinHeap *h, int cost, int idx);
+static HeapNode popHeap(MinHeap *h);
+static int isHeapEmpty(MinHeap *h);
+static void freeMinHeap(MinHeap *h);
 
-static const char *fareTypeName[FARE_TYPE_COUNT] = {
-    "",
-    "BTS",
-    "MRT",
-    "Airport Rail Link"
+enum {
+    FARE_TYPE_NONE = 0,
+    FARE_TYPE_BTS,
+    FARE_TYPE_MRT,
+    FARE_TYPE_ARL,
+    FARE_TYPE_COUNT
 };
 
-static const char *mapLineToFareType(const char *lineName) {
-    if (lineName && strstr(lineName, "Airport Rail Link")) return "Airport Rail Link";
-    if (lineName && strstr(lineName, "MRT")) return "MRT";
-    if (lineName && strstr(lineName, "BTS")) return "BTS";
-    return "BTS";
+static const char *fareTypeIdToString(int fareTypeId) {
+    switch (fareTypeId) {
+        case FARE_TYPE_BTS: return "BTS";
+        case FARE_TYPE_MRT: return "MRT";
+        case FARE_TYPE_ARL: return "Airport Rail Link";
+        default:            return "BTS";
+    }
 }
 
-static int mapLineToFareTypeId(const char *lineName) {
-    if (lineName && strstr(lineName, "Airport Rail Link")) return FARE_TYPE_ARL;
-    if (lineName && strstr(lineName, "MRT")) return FARE_TYPE_MRT;
-    if (lineName && strstr(lineName, "BTS")) return FARE_TYPE_BTS;
+static int fareTypeToId(const char *fareType) {
+    if (!fareType || fareType[0] == '\0') return FARE_TYPE_BTS;
+    if (strcmp(fareType, "BTS") == 0) return FARE_TYPE_BTS;
+    if (strcmp(fareType, "MRT") == 0) return FARE_TYPE_MRT;
+    if (strcmp(fareType, "Airport Rail Link") == 0) return FARE_TYPE_ARL;
     return FARE_TYPE_BTS;
 }
 
-static int lookupFare(const Graph *g, const char *fareType, int stationsPassed) {
-    int maxPass = -1;
-    int maxFare = 17;
+static const char *mapLineToFareType(const char *lineName) {
+    if (!lineName || lineName[0] == '\0') return "BTS";
+    if (strstr(lineName, "Airport Rail Link")) return "Airport Rail Link";
+    if (strstr(lineName, "BTS")) return "BTS";
+    if (strstr(lineName, "MRT")) return "MRT";
+    return "BTS";
+}
 
-    if (stationsPassed < 0) stationsPassed = 0;
+static int maxStationsPassedForFareType(const Graph *g, const char *fareType) {
+    int maxStations = -1;
 
     for (int i = 0; i < g->fareTable.count; i++) {
-        FareEntry fe = g->fareTable.entries[i];
-
-        if (strcmp(fe.lineType, fareType) != 0) continue;
-
-        if (fe.stationsPassed == stationsPassed)
-            return fe.fare;
-
-        if (fe.stationsPassed > maxPass) {
-            maxPass = fe.stationsPassed;
-            maxFare = fe.fare;
-        }
+        const FareEntry *entry = &g->fareTable.entries[i];
+        if (strcmp(entry->lineType, fareType) == 0 && entry->stationsPassed > maxStations)
+            maxStations = entry->stationsPassed;
     }
 
-    if (stationsPassed > maxPass) return maxFare;
+    return maxStations;
+}
+
+static int maxStationsPassedAcrossFareTable(const Graph *g) {
+    int maxStations = 0;
+
+    for (int i = 0; i < g->fareTable.count; i++) {
+        if (g->fareTable.entries[i].stationsPassed > maxStations)
+            maxStations = g->fareTable.entries[i].stationsPassed;
+    }
+
+    return maxStations;
+}
+
+static int clampStationsPassed(const Graph *g, int fareTypeId, int stationsPassed) {
+    int maxStations = maxStationsPassedForFareType(g, fareTypeIdToString(fareTypeId));
+
+    if (maxStations < 0) return 0;
+    if (stationsPassed < 0) return 0;
+    if (stationsPassed > maxStations) return maxStations;
+    return stationsPassed;
+}
+
+int lookupFare(const Graph *g, const char *fareType, int stationsPassed) {
+    int cappedStations = stationsPassed;
+    int maxStations = maxStationsPassedForFareType(g, fareType);
+
+    if (maxStations >= 0 && cappedStations > maxStations)
+        cappedStations = maxStations;
+    if (cappedStations < 0)
+        cappedStations = 0;
+
+    for (int i = 0; i < g->fareTable.count; i++) {
+        const FareEntry *entry = &g->fareTable.entries[i];
+        if (strcmp(entry->lineType, fareType) == 0 && entry->stationsPassed == cappedStations)
+            return entry->fare;
+    }
+
     return 17;
 }
 
-static int calculatePathFare(const Graph *g, const int *path, int pathLen) {
-    int totalFare = 0;
-    const char *currentType = NULL;
-    int stationsPassed = 0;
+static const Edge *findEdge(const Graph *g, int from, int to) {
+    const Edge *e = g->adjList[from];
+    while (e) {
+        if (e->destination == to) return e;
+        e = e->next;
+    }
+    return NULL;
+}
 
-    if (!path || pathLen <= 1) return 0;
+static const char *resolveEdgeFareType(const Graph *g, int from, int to) {
+    const char *fromType = mapLineToFareType(g->stations[from].line);
+    const char *toType = mapLineToFareType(g->stations[to].line);
+
+    if (strcmp(fromType, toType) == 0) return fromType;
+    if (g->stations[from].line[0] != '\0' && strstr(g->stations[from].line, "Interchange") == NULL) return fromType;
+    return toType;
+}
+
+int calculatePathFare(const Graph *g, const int *path, int pathLen) {
+    int totalFare = 0;
+    char currentFareType[MAX_LINE_LEN] = "";
+    int currentStationsPassed = 0;
+    int hasActiveSegment = 0;
+
+    if (!g || !path || pathLen <= 1) return 0;
 
     for (int i = 1; i < pathLen; i++) {
         int from = path[i - 1];
         int to = path[i];
-        Edge *e = g->adjList[from];
-        const char *fromType;
-        const char *nextType;
+        const Edge *e = findEdge(g, from, to);
+        const char *nextFareType;
 
-        while (e && e->destination != to) e = e->next;
         if (!e) continue;
 
+        /*
+         * Transfer / walk links are represented with distance == 0.0.
+         * They do not add fare and they end the current paid segment,
+         * so the next paid edge starts a new fare calculation.
+         */
         if (e->distance == 0.0) {
-            currentType = NULL;
-            stationsPassed = 0;
+            hasActiveSegment = 0;
+            currentFareType[0] = '\0';
+            currentStationsPassed = 0;
             continue;
         }
 
-        fromType = mapLineToFareType(g->stations[from].line);
-        nextType = mapLineToFareType(g->stations[to].line);
+        nextFareType = resolveEdgeFareType(g, from, to);
 
-        if (strcmp(fromType, nextType) != 0) {
-            if (!currentType) {
-                currentType = nextType;
-                stationsPassed = 1;
-                totalFare += lookupFare(g, currentType, stationsPassed);
-            } else if (i == pathLen - 1) {
-                int oldFare = lookupFare(g, currentType, stationsPassed);
-                stationsPassed++;
-                totalFare += lookupFare(g, currentType, stationsPassed) - oldFare;
-            } else {
-                currentType = NULL;
-                stationsPassed = 0;
-            }
+        if (!hasActiveSegment) {
+            strncpy(currentFareType, nextFareType, MAX_LINE_LEN - 1);
+            currentFareType[MAX_LINE_LEN - 1] = '\0';
+            currentStationsPassed = 0;
+            totalFare += lookupFare(g, currentFareType, currentStationsPassed);
+            hasActiveSegment = 1;
             continue;
         }
 
-        if (!currentType || strcmp(currentType, nextType) != 0) {
-            currentType = nextType;
-            stationsPassed = 1;
-            totalFare += lookupFare(g, currentType, stationsPassed);
-        } else {
-            int oldFare = lookupFare(g, currentType, stationsPassed);
-            stationsPassed++;
-            totalFare += lookupFare(g, currentType, stationsPassed) - oldFare;
+        if (strcmp(currentFareType, nextFareType) == 0) {
+            int previousFare = lookupFare(g, currentFareType, currentStationsPassed);
+            currentStationsPassed++;
+            int updatedFare = lookupFare(g, currentFareType, currentStationsPassed);
+            totalFare += updatedFare - previousFare;
+            continue;
         }
+
+        strncpy(currentFareType, nextFareType, MAX_LINE_LEN - 1);
+        currentFareType[MAX_LINE_LEN - 1] = '\0';
+        currentStationsPassed = 0;
+        totalFare += lookupFare(g, currentFareType, currentStationsPassed);
+        hasActiveSegment = 1;
     }
 
-    if (totalFare < 17 && pathLen > 1) totalFare = 17;
+    if (totalFare < 17 && pathLen > 1)
+        totalFare = 17;
+
     return totalFare;
 }
 
-static PathResult dijkstraFare(Graph *g, int src, int dst) {
+static int encodeFareState(int stationIndex, int fareTypeId, int stationsPassed, int passSpan) {
+    return ((stationIndex * FARE_TYPE_COUNT) + fareTypeId) * passSpan + stationsPassed;
+}
+
+static void decodeFareState(int stateIndex, int passSpan, int *stationIndex, int *fareTypeId, int *stationsPassed) {
+    *stationsPassed = stateIndex % passSpan;
+    stateIndex /= passSpan;
+    *fareTypeId = stateIndex % FARE_TYPE_COUNT;
+    *stationIndex = stateIndex / FARE_TYPE_COUNT;
+}
+
+static PathResult dijkstraByFare(Graph *g, int src, int dst) {
     PathResult result;
     int n = g->stationCount;
-    int dist[MAX_STATIONS][FARE_TYPE_COUNT][MAX_FARE_PASS];
-    int prevStation[MAX_STATIONS][FARE_TYPE_COUNT][MAX_FARE_PASS];
-    int prevType[MAX_STATIONS][FARE_TYPE_COUNT][MAX_FARE_PASS];
-    int prevPass[MAX_STATIONS][FARE_TYPE_COUNT][MAX_FARE_PASS];
-    int used[MAX_STATIONS][FARE_TYPE_COUNT][MAX_FARE_PASS];
-    int bestStation = -1, bestType = -1, bestPass = -1;
+    int passSpan = maxStationsPassedAcrossFareTable(g) + 1;
+    int stateCount;
+    int *dist;
+    int *prev;
+    int bestState = -1;
 
     result.path = NULL;
     result.pathLen = 0;
-    result.totalDist10 = 0;
-    result.totalTime = 0;
     result.totalFare = 0;
 
-    for (int s = 0; s < n; s++) {
-        for (int t = 0; t < FARE_TYPE_COUNT; t++) {
-            for (int p = 0; p < MAX_FARE_PASS; p++) {
-                dist[s][t][p] = INF;
-                prevStation[s][t][p] = -1;
-                prevType[s][t][p] = -1;
-                prevPass[s][t][p] = -1;
-                used[s][t][p] = 0;
-            }
-        }
+    if (src < 0 || dst < 0 || src >= n || dst >= n) return result;
+    if (passSpan <= 0) passSpan = 1;
+
+    stateCount = n * FARE_TYPE_COUNT * passSpan;
+    dist = (int *)malloc(sizeof(int) * stateCount);
+    prev = (int *)malloc(sizeof(int) * stateCount);
+    if (!dist || !prev) {
+        free(dist);
+        free(prev);
+        return result;
     }
 
-    dist[src][FARE_TYPE_NONE][0] = 0;
+    for (int i = 0; i < stateCount; i++) {
+        dist[i] = INF;
+        prev[i] = -1;
+    }
 
-    while (1) {
-        int minCost = INF;
+    MinHeap *pq = createMinHeap(stateCount / 4 + 16);
+    int srcState = encodeFareState(src, FARE_TYPE_NONE, 0, passSpan);
+    dist[srcState] = 0;
+    pushHeap(pq, 0, srcState);
 
-        bestStation = -1;
-        bestType = -1;
-        bestPass = -1;
+    while (!isHeapEmpty(pq)) {
+        HeapNode cur = popHeap(pq);
+        int state = cur.stationIndex;
+        int u, fareTypeId, stationsPassed;
 
-        for (int s = 0; s < n; s++) {
-            for (int t = 0; t < FARE_TYPE_COUNT; t++) {
-                for (int p = 0; p < MAX_FARE_PASS; p++) {
-                    if (used[s][t][p]) continue;
-                    if (dist[s][t][p] < minCost) {
-                        minCost = dist[s][t][p];
-                        bestStation = s;
-                        bestType = t;
-                        bestPass = p;
-                    }
-                }
-            }
-        }
+        if (cur.cost > dist[state]) continue;
 
-        if (bestStation == -1) break;
-        used[bestStation][bestType][bestPass] = 1;
-        if (bestStation == dst) break;
+        decodeFareState(state, passSpan, &u, &fareTypeId, &stationsPassed);
+        if (u == dst) break;
 
-        for (Edge *e = g->adjList[bestStation]; e; e = e->next) {
+        for (Edge *e = g->adjList[u]; e; e = e->next) {
             int v = e->destination;
-            int nextType = bestType;
-            int nextPass = bestPass;
-            int newCost = dist[bestStation][bestType][bestPass];
-            int fromType = mapLineToFareTypeId(g->stations[bestStation].line);
-            int toType = mapLineToFareTypeId(g->stations[v].line);
-            int continueRide = 0;
-            int startRide = 0;
+            int nextFareTypeId = fareTypeId;
+            int nextStationsPassed = stationsPassed;
+            int newCost = dist[state];
 
             if (g->stations[v].isClosed && v != dst) continue;
 
             if (e->distance == 0.0) {
-                nextType = FARE_TYPE_NONE;
-                nextPass = 0;
+                nextFareTypeId = FARE_TYPE_NONE;
+                nextStationsPassed = 0;
             } else {
-                if (fromType != toType) {
-                    if (bestType == FARE_TYPE_NONE) startRide = 1;
-                    else if (v == dst) continueRide = 1;
-                    else {
-                        nextType = FARE_TYPE_NONE;
-                        nextPass = 0;
-                    }
+                const char *nextFareType = resolveEdgeFareType(g, u, v);
+                nextFareTypeId = fareTypeToId(nextFareType);
+
+                if (fareTypeId == FARE_TYPE_NONE) {
+                    nextStationsPassed = 0;
+                    newCost += lookupFare(g, nextFareType, nextStationsPassed);
+                } else if (nextFareTypeId == fareTypeId) {
+                    int previousStationsPassed = clampStationsPassed(g, fareTypeId, stationsPassed);
+                    int updatedStationsPassed = clampStationsPassed(g, fareTypeId, stationsPassed + 1);
+                    int previousFare = lookupFare(g, fareTypeIdToString(fareTypeId), previousStationsPassed);
+                    int updatedFare = lookupFare(g, fareTypeIdToString(fareTypeId), updatedStationsPassed);
+
+                    nextStationsPassed = updatedStationsPassed;
+                    newCost += updatedFare - previousFare;
                 } else {
-                    if (bestType == FARE_TYPE_NONE || bestType != toType) startRide = 1;
-                    else continueRide = 1;
-                }
-
-                if (startRide) {
-                    nextType = toType;
-                    nextPass = 1;
-                    newCost += lookupFare(g, fareTypeName[nextType], nextPass);
-                } else if (continueRide) {
-                    int oldFare = lookupFare(g, fareTypeName[bestType], bestPass);
-                    nextType = bestType;
-                    nextPass = bestPass + 1;
-                    if (nextPass >= MAX_FARE_PASS) nextPass = MAX_FARE_PASS - 1;
-                    newCost += lookupFare(g, fareTypeName[nextType], nextPass) - oldFare;
+                    nextStationsPassed = 0;
+                    newCost += lookupFare(g, nextFareType, nextStationsPassed);
                 }
             }
 
-            if (newCost < dist[v][nextType][nextPass]) {
-                dist[v][nextType][nextPass] = newCost;
-                prevStation[v][nextType][nextPass] = bestStation;
-                prevType[v][nextType][nextPass] = bestType;
-                prevPass[v][nextType][nextPass] = bestPass;
+            int nextState = encodeFareState(v, nextFareTypeId, nextStationsPassed, passSpan);
+            if (newCost < dist[nextState]) {
+                dist[nextState] = newCost;
+                prev[nextState] = state;
+                pushHeap(pq, newCost, nextState);
             }
         }
     }
 
-    bestType = -1;
-    bestPass = -1;
-    for (int t = 0; t < FARE_TYPE_COUNT; t++) {
-        for (int p = 0; p < MAX_FARE_PASS; p++) {
-            if (dist[dst][t][p] == INF) continue;
-            if (bestType == -1 || dist[dst][t][p] < dist[dst][bestType][bestPass]) {
-                bestType = t;
-                bestPass = p;
-            }
+    freeMinHeap(pq);
+
+    for (int fareTypeId = 0; fareTypeId < FARE_TYPE_COUNT; fareTypeId++) {
+        for (int stationsPassed = 0; stationsPassed < passSpan; stationsPassed++) {
+            int state = encodeFareState(dst, fareTypeId, stationsPassed, passSpan);
+            if (dist[state] == INF) continue;
+            if (bestState == -1 || dist[state] < dist[bestState]) bestState = state;
         }
     }
 
-    if (bestType == -1) return result;
+    if (bestState == -1) {
+        free(dist);
+        free(prev);
+        return result;
+    }
 
-    int revPath[MAX_STATIONS];
     int len = 0;
-    int curStation = dst;
-    int curType = bestType;
-    int curPass = bestPass;
-
-    while (curStation != -1 && len < MAX_STATIONS) {
-        revPath[len++] = curStation;
-
-        {
-            int ps = prevStation[curStation][curType][curPass];
-            int pt = prevType[curStation][curType][curPass];
-            int pp = prevPass[curStation][curType][curPass];
-            curStation = ps;
-            curType = pt;
-            curPass = pp;
-        }
-    }
+    for (int state = bestState; state != -1; state = prev[state]) len++;
 
     result.path = (int *)malloc(sizeof(int) * len);
-    if (!result.path) return result;
-
-    result.pathLen = len;
-    for (int i = 0; i < len; i++)
-        result.path[i] = revPath[len - 1 - i];
-
-    for (int i = 1; i < result.pathLen; i++) {
-        Edge *e = g->adjList[result.path[i - 1]];
-        while (e && e->destination != result.path[i]) e = e->next;
-        if (!e) continue;
-        result.totalDist10 += (int)(e->distance * 10.0 + 0.5);
-        result.totalTime += e->time;
+    if (!result.path) {
+        free(dist);
+        free(prev);
+        return result;
     }
 
+    int pos = len - 1;
+    for (int state = bestState; state != -1; state = prev[state]) {
+        int stationIndex, fareTypeId, stationsPassed;
+        decodeFareState(state, passSpan, &stationIndex, &fareTypeId, &stationsPassed);
+        result.path[pos--] = stationIndex;
+    }
+
+    result.pathLen = len;
     result.totalFare = calculatePathFare(g, result.path, result.pathLen);
+
+    free(dist);
+    free(prev);
     return result;
 }
 
@@ -437,32 +476,29 @@ void graphRemoveStation(Graph *g, int idx) {
     }
 }
 
-// find shortest path
-// stops = 1 per edge
-// time  = use e->time
-// fare  = find path first, then calculate real fare from fare.csv
+/*
+  Find shortest path.
+  - by stops: weight = 1 per edge
+  - by fare : handled by fare-table-aware state expansion below, because
+              fare depends on stations passed per BTS/MRT/ARL segment and
+              transfer edges (distance == 0.0) do not add fare.
+ */
 PathResult dijkstra(Graph *g, int src, int dst, const char *mode) {
     PathResult result;
     result.path = NULL;
     result.pathLen = 0;
-    result.totalDist10 = 0;
-    result.totalTime = 0;
     result.totalFare = 0;
 
     int n = g->stationCount;
     if (src < 0 || dst < 0 || src >= n || dst >= n) return result;
-    if (strcmp(mode, "fare") == 0) return dijkstraFare(g, src, dst);
+    if (strcmp(mode, "fare") == 0) return dijkstraByFare(g, src, dst);
 
     int *dist = (int *)malloc(sizeof(int) * n);
     int *prev = (int *)malloc(sizeof(int) * n);
-    double *distKm = (double *)malloc(sizeof(double) * n);
-    int *distT = (int *)malloc(sizeof(int) * n);
 
     for (int i = 0; i < n; i++) {
         dist[i] = INF;
         prev[i] = -1;
-        distKm[i] = 0.0;
-        distT[i] = 0;
     }
     dist[src] = 0;
 
@@ -484,18 +520,12 @@ PathResult dijkstra(Graph *g, int src, int dst, const char *mode) {
                 continue;
             }
 
-            int w;
-            if (strcmp(mode, "time") == 0)
-                w = e->time;
-            else
-                w = 1;
+            int w = 1;
 
             int newCost = dist[u] + w;
             if (newCost < dist[v]) {
                 dist[v] = newCost;
                 prev[v] = u;
-                distKm[v] = distKm[u] + e->distance;
-                distT[v] = distT[u] + e->time;
                 pushHeap(pq, newCost, v);
             }
             e = e->next;
@@ -504,7 +534,7 @@ PathResult dijkstra(Graph *g, int src, int dst, const char *mode) {
     freeMinHeap(pq);
 
     if (dist[dst] == INF) {
-        free(dist); free(prev); free(distKm); free(distT);
+        free(dist); free(prev);
         return result;
     }
 
@@ -519,11 +549,9 @@ PathResult dijkstra(Graph *g, int src, int dst, const char *mode) {
 
     result.path = path;
     result.pathLen = len;
-    result.totalDist10 = (int)(distKm[dst] * 10.0 + 0.5);
-    result.totalTime = distT[dst];
     result.totalFare = calculatePathFare(g, result.path, result.pathLen);
 
-    free(dist); free(prev); free(distKm); free(distT);
+    free(dist); free(prev);
     return result;
 }
 
@@ -543,7 +571,7 @@ void displayPath(const Graph *g, const PathResult *pr) {
         if (i < pr->pathLen - 1) printf(" -> ");
     }
 
-    // count line changes from the shown route
+    // count line changes
     int interchanges = 0;
     const char *currentLine = g->stations[pr->path[0]].line;
     for (int i = 1; i < pr->pathLen; i++) {
@@ -569,8 +597,6 @@ void displayPath(const Graph *g, const PathResult *pr) {
 
     printf("\n");
     printf("  Stations    : %d stop(s)\n", pr->pathLen - 1);
-    printf("  Distance    : %.1f km\n", pr->totalDist10 / 10.0);
-    printf("  Time        : ~%d minutes\n", pr->totalTime);
     printf("  Fare        : %d THB\n", pr->totalFare);
     printf("  Line changes: %d\n", interchanges);
 
@@ -604,9 +630,9 @@ void graphDisplay(const Graph *g) {
         Edge *e = g->adjList[i];
         if (!e) { printf("(none)\n"); continue; }
         while (e) {
-            printf("%s(%.1fkm,%dmin,%dTHB) ",
+            printf("%s(%dTHB) ",
                    g->stations[e->destination].name,
-                   e->distance, e->time, e->fare);
+                   e->fare);
             e = e->next;
         }
         printf("\n");
